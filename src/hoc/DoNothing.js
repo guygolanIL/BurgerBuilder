@@ -1,0 +1,1 @@
+export const DoNothing = (props) => props.children;

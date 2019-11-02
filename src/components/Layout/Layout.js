@@ -1,15 +1,15 @@
 import React from 'react';
-import Aux from '../../hoc/Aux';
 import './Layout.css';
+import { DoNothing } from '../../hoc/DoNothing';
 
 const layout = (props) => {
     return(
-        <Aux>
+        <DoNothing>
             <div>Toolbar, sideDrawer, Backdrop</div>
             <main className={'Content'}>
                 {props.children}
             </main>
-        </Aux>
+        </DoNothing>
     );
 };
 export default layout;
