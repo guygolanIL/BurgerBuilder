@@ -2,6 +2,8 @@ import React from "react";
 import { Burger } from "../../components/Burger/Burger";
 import { BuildControls } from "../../components/Burger/BuildControls/BuildControls";
 import { DoNothing } from "../../hoc/DoNothing";
+import { Modal } from "../../components/UI/Modal/Modal";
+import { OrderSummary } from "../../components/Burger/OrderSummary/OrderSummary";
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -19,10 +21,11 @@ export class BurgerBuilder extends React.Component {
       meat: 0
     },
     totalPrice: 4,
-    purchasable: false
+    purchasable: false,
+    purchasing: false
   };
 
-  updatePurchaseState = (ingredients) => {
+  updatePurchaseState = ingredients => {
     const sum = Object.keys(ingredients)
       .map(igKey => {
         return ingredients[igKey];
@@ -31,7 +34,7 @@ export class BurgerBuilder extends React.Component {
         return sum + el;
       }, 0);
 
-      this.setState({purchasable: sum > 0});
+    this.setState({ purchasable: sum > 0 });
   };
 
   addIngredientHandler = type => {
@@ -54,6 +57,19 @@ export class BurgerBuilder extends React.Component {
 
     this.updatePurchaseState(updatedIngredients);
   };
+
+  purchaseHandler = () => {
+    this.setState({
+      purchasing: true
+    });
+  };
+
+  purchaseCancelHandler = () => {
+    this.setState({
+      purchasing: false
+    });
+  };
+
   removeIngredientHandler = type => {
     const oldCount = this.state.ingredients[type];
     if (oldCount <= 0) {
@@ -89,6 +105,12 @@ export class BurgerBuilder extends React.Component {
 
     return (
       <DoNothing>
+        <Modal
+          modalClose={this.purchaseCancelHandler}
+          show={this.state.purchasing}
+        >
+          <OrderSummary ingredients={this.state.ingredients} />
+        </Modal>
         <Burger ingredients={this.state.ingredients} />
         <BuildControls
           price={this.state.totalPrice}
@@ -96,6 +118,7 @@ export class BurgerBuilder extends React.Component {
           ingredientRemoved={this.removeIngredientHandler}
           disabled={disabledInfo}
           purchasable={this.state.purchasable}
+          ordered={this.purchaseHandler}
         />
       </DoNothing>
     );
