@@ -1,12 +1,12 @@
 import React from "react";
 import "./Layout.css";
-import { DoNothing } from "../../hoc/DoNothing";
-import Toolbar from "./../Navigation/Toolbar/Toolbar";
-import SideDrawer from "../Navigation/SideDrawer/SideDrawer";
+import { DoNothing } from "../DoNothing/DoNothing";
+import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
+import SideDrawer from "../../components/Navigation/SideDrawer/SideDrawer";
 
 class Layout extends React.Component {
     state = {
-        showSideDrawer: true
+        showSideDrawer: false
     };
 
     sideDrawerClosedHandler = () => {
@@ -22,7 +22,7 @@ class Layout extends React.Component {
     render() {
         return (
             <DoNothing>
-                <Toolbar drawerToggleClicked={this.sideDrawerToggleHandler}/>
+                <Toolbar drawerToggleClicked={this.sideDrawerToggleHandler} />
                 <SideDrawer
                     open={this.state.showSideDrawer}
                     closed={this.sideDrawerClosedHandler}

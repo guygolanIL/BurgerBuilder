@@ -1,7 +1,7 @@
 import React from "react";
 import "./SideDrawer.css";
 import { Backdrop } from "../../UI/Backdrop/Backdrop";
-import { DoNothing } from "../../../hoc/DoNothing";
+import { DoNothing } from "../../../hoc/DoNothing/DoNothing";
 import Logo from "../../Logo/Logo";
 import NavigationItems from "../NavigationItems/NavigationItems";
 
