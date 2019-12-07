@@ -5,18 +5,24 @@ import { DoNothing } from "../DoNothing/DoNothing";
 const withErrorHandler = (WrappedComponent, axios) => {
     return class extends React.Component {
         state = {
-            error: null
+            error: null,
+
         };
 
-        componentDidMount() {
-            axios.interceptors.request.use(req => {
+        componentWillMount() {
+            this.requestInterceptor = axios.interceptors.request.use(req => {
                 this.setState({ error: null });
                 return req;
             });
 
-            axios.interceptors.response.use(res => res, err => {
+            this.responseInterceptor = axios.interceptors.response.use(res => res, err => {
                 this.setState({ error: err });
             });
+        }
+
+        componentWillUnmount(){
+            axios.interceptors.eject(this.requestInterceptor);
+            axios.interceptors.eject(this.responseInterceptor);
         }
 
         errorConfirmedHandler = () => {
