@@ -4,6 +4,9 @@ import { BuildControls } from "../../components/Burger/BuildControls/BuildContro
 import { DoNothing } from "../../hoc/DoNothing/DoNothing";
 import { Modal } from "../../components/UI/Modal/Modal";
 import { OrderSummary } from "../../components/Burger/OrderSummary/OrderSummary";
+import Spinner from "../../components/UI/Spinner/Spinner";
+import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
+import AxiosInstance from "../../axios-orders";
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -12,7 +15,7 @@ const INGREDIENT_PRICES = {
     bacon: 1.7
 };
 
-export class BurgerBuilder extends React.Component {
+class BurgerBuilder extends React.Component {
     state = {
         ingredients: {
             salad: 0,
@@ -22,7 +25,8 @@ export class BurgerBuilder extends React.Component {
         },
         totalPrice: 4,
         purchasable: false,
-        purchasing: false
+        purchasing: false,
+        loading: false
     };
 
     updatePurchaseState = ingredients => {
@@ -65,7 +69,25 @@ export class BurgerBuilder extends React.Component {
     };
 
     purchaseContinueHandler = () => {
-        alert("You continued!");
+        // alert("You continued!");
+        this.setState({ loading: true });
+        const order = {
+            ingredients: this.state.ingredients,
+            price: this.state.totalPrice.toFixed(2), // should be calculated on the server in a real app
+            customer: {
+                name: "Guy Golan",
+                address: "Test Address",
+                country: "IL"
+            },
+            email: "test@test.com",
+            deliveryMethod: "fastest"
+        };
+        // .json is mandatory for firebase db
+        AxiosInstance.post("/orders.json", order)
+            .then(res => {
+                this.setState({ loading: false , purchasing: false});
+            })
+            .catch(err => this.setState({ loading: false, purchasing: false }));
     };
 
     purchaseCancelHandler = () => {
@@ -107,18 +129,26 @@ export class BurgerBuilder extends React.Component {
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
 
+        let orderSummary = (
+            <OrderSummary
+                price={this.state.totalPrice}
+                onContinue={this.purchaseContinueHandler}
+                onCancel={this.purchaseCancelHandler}
+                ingredients={this.state.ingredients}
+            />
+        );
+
+        if (this.state.loading) {
+            orderSummary = <Spinner></Spinner>;
+        }
+
         return (
             <DoNothing>
                 <Modal
                     modalClose={this.purchaseCancelHandler}
                     show={this.state.purchasing}
                 >
-                    <OrderSummary
-                        price={this.state.totalPrice}
-                        onContinue={this.purchaseContinueHandler}
-                        onCancel={this.purchaseCancelHandler}
-                        ingredients={this.state.ingredients}
-                    />
+                    {orderSummary}
                 </Modal>
                 <Burger ingredients={this.state.ingredients} />
                 <BuildControls
@@ -133,3 +163,5 @@ export class BurgerBuilder extends React.Component {
         );
     }
 }
+
+export default withErrorHandler(BurgerBuilder, AxiosInstance);
