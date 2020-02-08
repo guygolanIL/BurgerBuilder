@@ -23,7 +23,7 @@ export const Burger = props => {
     }
 
   return (
-    <div className="Burger">
+    <div style={props.style} className="Burger">
       <BurgerIngredient type="bread-top" />
       {transformedIngredients}
       <BurgerIngredient type="bread-bottom" />
